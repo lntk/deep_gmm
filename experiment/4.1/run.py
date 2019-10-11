@@ -6,6 +6,8 @@ from os.path import dirname, abspath
 
 os.sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 
+print(os.sys.path)
+
 """
 DATASET
 """
