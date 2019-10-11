@@ -1,7 +1,6 @@
 from util import general_utils
-import config
 
-def get_data_files(data_dirs, path_to_data=config.PATH_TO_CD2014, temporalROI="temporalROI"):
+def get_data_files(data_dirs, path_to_data, temporalROI="temporalROI"):
     data_dirs = [f"{path_to_data}/{data_dir}" for data_dir in data_dirs]
     
     data = dict()

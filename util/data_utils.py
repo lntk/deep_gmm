@@ -1,8 +1,3 @@
-import os
-from os.path import dirname, abspath
-
-os.sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
-
 import random
 
 import cv2
@@ -10,7 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from util import general_utils
-import config
 from data.CDnet2014_data_utils import get_data_files
 
 
@@ -30,7 +24,7 @@ def get_sequences(data, sequence_length):
     return all_subsequences
         
 
-def get_subsequences(video, sequence_length=config.SEQUENCE_LENGTH):    
+def get_subsequences(video, sequence_length=20):    
     num_frame = len(video["inputs"])    
     num_subsequence = int(num_frame / sequence_length)
     
@@ -61,34 +55,7 @@ def get_all_frames(video):
     sequences["inputs"].append(video["inputs"])
     sequences["groundtruths"].append(video["groundtruths"])
     
-    return sequences
-                
-            
-def read_sequence(sequence):
-    frames = list()
-    targets = list()
-    
-    frame_files, target_files = sequence
-    
-    for frame_file in frame_files:
-        frame = cv2.imread(frame_file)        
-        frame = cv2.resize(frame, dsize=(config.INPUT_SIZE[1], config.INPUT_SIZE[0]))                        
-        frame = np.rollaxis(frame, -1, 0)  # channel last -> channel first         
-        frames.append(frame)
-        
-    for target_file in target_files:        
-        target = cv2.imread(target_file, 0)                
-        _, target = cv2.threshold(target, thresh=254, maxval=255, type=cv2.THRESH_BINARY)
-        target = cv2.resize(target, dsize=(config.INPUT_SIZE[1], config.INPUT_SIZE[0]))
-        target = (target > 0).astype("uint8")
-        target = np.expand_dims(target, axis=-1)
-        target = np.rollaxis(target, -1, 0)  # channel last -> channel first         
-        targets.append(target)
-        
-    frames = np.expand_dims(frames, axis=1)
-    targets = np.expand_dims(targets, axis=1)
-    
-    return frames, targets
+    return sequences                            
 
 
 def view_random_sample(frames, targets):
