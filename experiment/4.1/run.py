@@ -21,7 +21,7 @@ video_dataset = VideoSequenceDataset(
     # data_file="experiment/4/toy_train.txt",
     # path_to_data="data/toy",
     data_file='experiment/4.1/CDnet2014_train.txt',
-    path_to_data='/home/khanglnt/Desktop/dataset',
+    path_to_data='/content/drive/My Drive/Background subtraction/dataset',
     transform=(transforms.Compose([
             Rescale((128, 128)),
             Normalize(),
