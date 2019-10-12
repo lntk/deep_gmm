@@ -74,15 +74,6 @@ optimizer = optim.Adam((model.parameters()), lr=0.01)
 # optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
 
 
-
-"""
-CLEAR CACHE
-"""
-from util import general_utils
-
-general_utils.delete_files_in_dir("tmp")
-
-
 """
 TRAINING
 """
