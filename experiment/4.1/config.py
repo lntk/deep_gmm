@@ -3,7 +3,7 @@ import torch
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 SEQUENCE_LENGTH = 20
 INPUT_SIZE = (128, 128)
-BATCH_SIZE = 4
+BATCH_SIZE = 32
 PATH_TO_CD2014 = "data/CDnet2014"
 TRAIN_FILE = "data/CDnet2014_train.txt"
 NUM_EPOCH = 500
