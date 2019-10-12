@@ -78,7 +78,7 @@ optimizer = optim.Adam((model.parameters()), lr=0.01)
 TRAINING
 """
 from tqdm import tqdm
-import time, visualize
+import time
 from loss import jaccard_loss, binary_cross_entropy
 import torch
 from torch.utils.tensorboard import SummaryWriter
