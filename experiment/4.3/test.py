@@ -87,7 +87,7 @@ best_checkpoint = torch.load(args.model_path)
 
 state_dict = best_checkpoint["state_dict"]
 if args.single_gpu:
-    for key in state_dict.keys:
+    for key in state_dict.keys():
         if "module." in key:
             state_dict[key.replace("module.", "")] = state_dict[key]
             state_dict.pop(key, None)
