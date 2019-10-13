@@ -1,0 +1,8 @@
+baseline/highway
+baseline/office
+baseline/pedestrians
+baseline/PETS2006
+cameraJitter/badminton
+cameraJitter/boulevard
+cameraJitter/sidewalk
+cameraJitter/traffic

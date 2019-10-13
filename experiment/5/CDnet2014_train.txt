@@ -1,0 +1,12 @@
+baseline/PETS2006
+baseline/pedestrians
+baseline/office
+baseline/highway
+cameraJitter/boulevard
+cameraJitter/sidewalk
+cameraJitter/badminton
+cameraJitter/traffic
+badWeather/snowFall
+badWeather/blizzard
+badWeather/wetSnow
+badWeather/skating
