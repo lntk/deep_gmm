@@ -6,6 +6,29 @@ from os.path import dirname, abspath
 
 os.sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 
+"""
+ARGS
+"""
+import argparse
+
+parser = argparse.ArgumentParser(description="Visualize outputs of a model")
+parser.add_argument("--data_dir")
+parser.add_argument("--dataset_dir")
+parser.add_argument("--model_path")
+parser.add_argument("--result_path")
+
+args = parser.parse_args()
+
+"""
+"""
+from shutil import copyfile
+
+tmp_path = f"{args.dataset_dir}/{args.data_dir}"
+copyfile(f"{tmp_path}/temporalROI.txt", f"{tmp_path}/temporalROI_test.txt")
+
+"""
+DATASET
+"""
 import torch
 from torchvision import transforms
 
@@ -14,13 +37,10 @@ from transform import Rescale, ToTensor, Normalize
 import config
 
 
-"""
-DATASET
-"""
 video_dataset = VideoSequenceDataset(
-    data_file='experiment/4.3/CDnet2014_test.txt',
-    # path_to_data='data/CDnet2014',
-    path_to_data="/home/khanglnt/Desktop/dataset",
+    data_file="",
+    data_dir=args.data_dir,    
+    path_to_data=args.dataset_dir,
     transform=(transforms.Compose([
             Rescale((128, 128)),
             Normalize(),
@@ -62,7 +82,7 @@ if torch.cuda.device_count() > 1:
 model.to(config.DEVICE)
 
 
-best_checkpoint = torch.load("model/best_model_4.3_13.52.pth")
+best_checkpoint = torch.load(args.model_path)
 model.load_state_dict(best_checkpoint["state_dict"])
 model.eval()
 
@@ -90,7 +110,7 @@ for frames, targets in tqdm(test_loader, ncols=100):
     #     # io.imsave(f"experiment/2.2/result/{'{:06d}'.format(i + 1)}.jpg", (outputs[0, i, 0, :, :] > config.TEST_THRESHOLD).long().cpu().numpy())            
     #     io.imsave(f"experiment/2.2/result/{'{:06d}'.format(i + 1)}.jpg", outputs[0, i, 0, :, :].cpu().detach().numpy())            
     
-    with open('experiment/4.3/result.pkl', 'wb') as handle:
+    with open(args.result_path, 'wb') as handle:
         pickle.dump(outputs[0, :, :, :, :].cpu().detach().numpy(), handle, protocol=pickle.HIGHEST_PROTOCOL)    
         
     break
