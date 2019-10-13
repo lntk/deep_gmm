@@ -23,9 +23,14 @@ args = parser.parse_args()
 """
 """
 from shutil import copyfile
+from util import general_utils
 
 tmp_path = f"{args.dataset_dir}/{args.data_dir}"
 copyfile(f"{tmp_path}/temporalROI.txt", f"{tmp_path}/temporalROI_test.txt")
+
+start_frame = general_utils.read_lines(f"{tmp_path}/temporalROI_test.txt")[0].split(" ")[0]
+end_frame = str(int(start_frame) + 300)
+general_utils.write_lines([f"{start_frame} {end_frame}"], f"{tmp_path}/temporalROI_test.txt")
 
 """
 DATASET
