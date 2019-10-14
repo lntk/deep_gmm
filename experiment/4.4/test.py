@@ -6,6 +6,35 @@ from os.path import dirname, abspath
 
 os.sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 
+"""
+ARGS
+"""
+import argparse
+
+parser = argparse.ArgumentParser(description="Visualize outputs of a model")
+parser.add_argument("--data_dir")
+parser.add_argument("--dataset_dir")
+parser.add_argument("--model_path")
+parser.add_argument("--result_path")
+parser.add_argument("--single_gpu", type=bool, default=False)
+
+args = parser.parse_args()
+
+"""
+"""
+from shutil import copyfile
+from util import general_utils
+
+tmp_path = f"{args.dataset_dir}/{args.data_dir}"
+copyfile(f"{tmp_path}/temporalROI.txt", f"{tmp_path}/temporalROI_test.txt")
+
+start_frame = general_utils.read_lines(f"{tmp_path}/temporalROI_test.txt")[0].split(" ")[0]
+end_frame = str(int(start_frame) + 300)
+general_utils.write_lines([f"{start_frame} {end_frame}"], f"{tmp_path}/temporalROI_test.txt")
+
+"""
+DATASET
+"""
 import torch
 from torchvision import transforms
 
@@ -13,13 +42,11 @@ from dataset import VideoSequenceDataset
 from transform import Rescale, ToTensor, Normalize
 import config
 
-"""
-DATASET
-"""
+
 video_dataset = VideoSequenceDataset(
-    data_file='experiment/4/CDnet2014_test.txt',
-    # path_to_data='data/CDnet2014',
-    path_to_data="/home/khanglnt/Desktop/dataset",
+    data_file="",
+    data_dir=args.data_dir,    
+    path_to_data=args.dataset_dir,
     transform=(transforms.Compose([
             Rescale((128, 128)),
             Normalize(),
@@ -41,6 +68,7 @@ Test data:
 cameraJitter/badminton
 baseline/pedestrians
 baseline/highway
+badWeather/snowFall
 """
 
 
@@ -59,10 +87,18 @@ if torch.cuda.device_count() > 1:
 
 model.to(config.DEVICE)
 
-# best_checkpoint = torch.load("experiment/3/best_model.pth")
-# best_checkpoint = torch.load("backup/best_model_1719.pth")
-best_checkpoint = torch.load("backup/20191011_best_model_4_baseline_cameraJitter_0.11.pth")
-model.load_state_dict(best_checkpoint["state_dict"])
+
+best_checkpoint = torch.load(args.model_path)
+
+state_dict = best_checkpoint["state_dict"]
+if args.single_gpu:
+    tmp_keys = list(state_dict.keys())
+    for key in tmp_keys:
+        if "module." in key:
+            state_dict[key.replace("module.", "")] = state_dict[key]            
+            state_dict.pop(key, None)    
+
+model.load_state_dict(state_dict)
 model.eval()
 
 
@@ -80,7 +116,7 @@ for frames, targets in tqdm(test_loader, ncols=100):
     frames = frames.to(config.DEVICE)
     targets = targets.to(config.DEVICE)
     
-    outputs = model(frames, targets)   
+    outputs, _, _, _ = model(frames, targets)   
     B, S, _, H, W = outputs.shape
     
     loss = jaccard_loss(outputs, targets)
@@ -89,11 +125,11 @@ for frames, targets in tqdm(test_loader, ncols=100):
     #     # io.imsave(f"experiment/2.2/result/{'{:06d}'.format(i + 1)}.jpg", (outputs[0, i, 0, :, :] > config.TEST_THRESHOLD).long().cpu().numpy())            
     #     io.imsave(f"experiment/2.2/result/{'{:06d}'.format(i + 1)}.jpg", outputs[0, i, 0, :, :].cpu().detach().numpy())            
     
-    with open('experiment/4/result.pkl', 'wb') as handle:
+    with open(args.result_path, 'wb') as handle:
         pickle.dump(outputs[0, :, :, :, :].cpu().detach().numpy(), handle, protocol=pickle.HIGHEST_PROTOCOL)    
         
     break
 
-print("Test loss:", loss.item())
+print("\nTest loss:", loss.item())
             
 print('=== TESTING: DONE. ===')
