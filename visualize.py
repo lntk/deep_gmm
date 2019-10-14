@@ -33,7 +33,7 @@ if to_frames:
 
     for i in tqdm(range(S)):
         output = outputs[i, 0, :, :]
-        output[output > 0.5] = 255.
+        output[output > 0.9] = 255.
         output = output.astype('uint8')
         cv2.imwrite(f"tmp/{'{:06d}'.format(i + 1)}.jpg", output)
 
