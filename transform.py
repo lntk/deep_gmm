@@ -1,6 +1,7 @@
-from skimage import transform
 import numpy as np
 import torch
+import albumentations as A
+import cv2
 
 
 class Rescale(object):
@@ -22,24 +23,35 @@ class Rescale(object):
         h, w = frames[0].shape[:2]
         
         if isinstance(self.output_size, int):
-            if h > w:
-                new_h, new_w = self.output_size * h / w, self.output_size
-            else:
-                new_h, new_w = self.output_size, self.output_size * w / h
+            new_h = self.output_size
+            new_w = self.output_size
         else:
             new_h, new_w = self.output_size
 
-        new_h, new_w = int(new_h), int(new_w)
-
-        frames = [transform.resize(frame, (new_h, new_w), preserve_range=True) for frame in frames]
-        targets = [transform.resize(target, (new_h, new_w)) for target in targets]        
+        new_h, new_w = int(new_h), int(new_w)        
         
-        frames = np.array(frames)
-        targets = np.array(targets)
+        frames = [cv2.resize(frame, (new_h, new_w)) for frame in frames]
+        targets = [cv2.resize(target, (new_h, new_w)) for target in targets]        
+        
+        frames = np.array(frames).astype('uint8')
+        targets = np.expand_dims(np.array(targets).astype('uint8'), axis=-1)
 
         return frames, targets
     
+class TwistColor(object):    
+    def __call__(self, sample):
+        frames, targets = sample
+
+        color_twister = A.Compose([
+            A.ChannelShuffle(p=0.5),
+            A.RGBShift(r_shift_limit=50, g_shift_limit=50, b_shift_limit=50, p=0.5),
+        ], p=1)
         
+        frames = [color_twister(image=frame)["image"] for frame in frames]        
+        frames = np.array(frames).astype('uint8')
+        
+        return frames, targets
+
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
 
@@ -64,3 +76,4 @@ class Normalize(object):
         frames = frames / 255.
         
         return frames, targets
+    
