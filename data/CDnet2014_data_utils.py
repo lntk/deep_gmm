@@ -1,6 +1,6 @@
 from util import general_utils
 
-def get_data_files(data_dirs, path_to_data, temporalROI="temporalROI"):
+def get_data_files(data_dirs, path_to_data, temporalROI="temporalROI", max_video_length=None):
     data_dirs = [f"{path_to_data}/{data_dir}" for data_dir in data_dirs]
     
     data = dict()
@@ -10,6 +10,9 @@ def get_data_files(data_dirs, path_to_data, temporalROI="temporalROI"):
         parts = line.split(" ")
         start_frame = int(parts[0])
         end_frame = int(parts[1])
+        
+        if max_video_length is not None:
+            end_frame = min(start_frame + max_video_length - 1, end_frame)
         
         if data_dir not in data:
             data[data_dir] = dict()            

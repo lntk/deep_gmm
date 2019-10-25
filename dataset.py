@@ -8,14 +8,22 @@ from data.CDnet2014_data_utils import get_data_files
 
 
 class VideoSequenceDataset(Dataset):
-    def __init__(self, path_to_data, sequence_length, data_file=None, transform=None, temporalROI="temporalROI", data_dirs=None):
+    def __init__(self, path_to_data, sequence_length, 
+                 data_file=None, 
+                 transform=None, 
+                 temporalROI="temporalROI", 
+                 data_dirs=None,
+                 max_video_length=None):
         if data_dirs is None:
             if data_file is None:
                 raise Exception("Unspecified data.")            
             data_dirs = general_utils.read_lines(data_file)
         else:
             data_dirs = data_dirs
-        data = get_data_files(data_dirs, path_to_data=path_to_data, temporalROI=temporalROI)  
+        data = get_data_files(data_dirs, 
+                              path_to_data=path_to_data, 
+                              temporalROI=temporalROI,
+                              max_video_length=max_video_length)  
         
         sequences = data_utils.get_sequences(data=data, sequence_length=sequence_length)
         
