@@ -33,8 +33,8 @@ class Rescale(object):
         frames = [cv2.resize(frame, (new_h, new_w)) for frame in frames]
         targets = [cv2.resize(target, (new_h, new_w)) for target in targets]        
         
-        frames = np.array(frames).astype('uint8')        
-        targets = np.expand_dims(np.where(np.isclose(np.array(targets), 1.0), 1.0, 0.0), axis=-1).astype('uint8')
+        frames = np.array(frames).astype('uint8')
+        targets = np.expand_dims(np.array(targets).astype('uint8'), axis=-1)
 
         return frames, targets
     

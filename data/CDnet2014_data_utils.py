@@ -26,5 +26,3 @@ def get_data_files(data_dirs, path_to_data, temporalROI="temporalROI", max_video
             data[data_dir]["groundtruths"].append(f"{data_dir}/groundtruth/gt{'{:06d}'.format(i)}.png")
             
     return data
-        
-        
